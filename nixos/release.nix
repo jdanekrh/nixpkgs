@@ -229,6 +229,8 @@ in rec {
   #tests.gitlab = callTest tests/gitlab.nix {};
   tests.gnome3 = callTest tests/gnome3.nix {};
   tests.gnome3-gdm = callTest tests/gnome3-gdm.nix {};
+  tests.gnome3_20 = callTest tests/gnome3_20.nix {};
+  tests.gnome3_20-gdm = callTest tests/gnome3_20-gdm.nix {};
   tests.grsecurity = callTest tests/grsecurity.nix {};
   tests.i3wm = callTest tests/i3wm.nix {};
   tests.installer = callSubTests tests/installer.nix {};
