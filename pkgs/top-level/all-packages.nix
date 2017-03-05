@@ -19393,6 +19393,8 @@ in
     ncurses = ncurses5;
   };
 
+  spideroakgroups = callPackage ../applications/networking/spideroakgroups { };
+
   ssvnc = callPackage ../applications/networking/remote/ssvnc { };
 
   stupidterm = callPackage ../applications/misc/stupidterm {
