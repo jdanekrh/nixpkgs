@@ -1,34 +1,26 @@
-{ stdenv, fetchurl, makeWrapper, glib
-, fontconfig, patchelf, libXext, libX11
-, freetype, libXrender, rpmextract, zlib
+{ stdenv, fetchurl, makeWrapper, patchelf
+, fontconfig, freetype, glib, libICE, libSM
+, libX11, libXext, libXrender, zlib, rpmextract
 }:
 
 let
-  arch = if stdenv.system == "x86_64-linux" then "x86_64"
-    else if stdenv.system == "i686-linux" then "i386"
-    else throw "Spideroak client for: ${stdenv.system} not supported!";
-
   interpreter = if stdenv.system == "x86_64-linux" then "ld-linux-x86-64.so.2"
-    else if stdenv.system == "i686-linux" then "ld-linux.so.2"
-    else throw "Spideroak client for: ${stdenv.system} not supported!";
-
-  sha256 = if stdenv.system == "x86_64-linux" then "ed8fe0f91ca559af27b9fb1043c40cae199db4cc29939a45496ff4c390381c1e"
-    else if stdenv.system == "i686-linux" then "03nm1bxjy0c906aalx8y830cigmj1fxdcmjx9x9lv1lyfi3mqmvf"
     else throw "Spideroak client for: ${stdenv.system} not supported!";
 
   ldpath = stdenv.lib.makeLibraryPath [
-    glib fontconfig libXext libX11 freetype libXrender zlib
+    fontconfig freetype glib libICE libSM
+    libX11 libXext libXrender zlib
   ];
 
-  version = "6.1.4";
+  version = "7.5.0.1";
 
 in stdenv.mkDerivation {
   name = "spideroakgroups-${version}";
 
   src = fetchurl {
-    name = "spideroakgroups-${version}-${arch}";
-    url = "https://spideroak.com/getbuild?platform=fedora&arch=${arch}&brand=so.blue&version=${version}";
-    inherit sha256;
+    name = "SpiderOakGroups.${version}.x86_64.rpm";
+    url = "https://spideroak.com/release/so.blue/rpm_x64";
+    sha256 = "0h804yhx0vjhb5gg98knqa5gq8cw6ghrnknhzkizwl83n5fxvkrn";
   };
 
   sourceRoot = ".";
@@ -39,7 +31,12 @@ in stdenv.mkDerivation {
     mkdir "$out"
     cp -r "./"* "$out"
     mkdir "$out/bin"
+    mv $out/usr/share $out/
     rm "$out/usr/bin/SpiderOakGroups"
+    rmdir $out/usr/bin || true
+    
+    rm -f "$out/opt/SpiderOak Groups/lib/libz*"
+    
     patchelf --set-interpreter ${stdenv.glibc}/lib/${interpreter} \
       "$out/opt/SpiderOak Groups/lib/SpiderOakGroups"
           
@@ -47,8 +44,9 @@ in stdenv.mkDerivation {
     # ImportError: /nix/store/jlydjilcslwajqhn0s6b43vjvinsxm4k-spideroakgroups-6.1.4/opt/SpiderOak Groups/lib/libz.so.1: version
     # `ZLIB_1.2.9' not found (required by /nix/store/781s9dc59hf16279503nbx55wwjz9v65-libpng-apng-1.6.28/lib/libpng16.so.16)
     RPATH="${ldpath}:$out/opt/SpiderOak Groups/lib"  # prefer system libraries over embedded to resolve error above
-    makeWrapper "$out/opt/SpiderOak\ Groups/lib/SpiderOakGroups" $out/bin/spideroakgroups --set LD_LIBRARY_PATH "$RPATH" \
-      --set QT_PLUGIN_PATH "$out/opt/SpiderOak\ Groups/lib/plugins/" \
+    makeWrapper "$out/opt/SpiderOak Groups/lib/SpiderOakGroups" $out/bin/spideroakgroups \
+      --set LD_LIBRARY_PATH "$RPATH" \
+      --set QT_PLUGIN_PATH "$out/opt/SpiderOak Groups/lib/plugins/" \
       --set SpiderOak_EXEC_SCRIPT $out/bin/spideroakgroups
   '';
 
