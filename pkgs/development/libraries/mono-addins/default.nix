@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, mono6, msbuild, gtk-sharp-2_0 }:
+{ stdenv, fetchFromGitHub, autoreconfHook, pkgconfig, mono, gtk-sharp-2_0 }:
 
 stdenv.mkDerivation rec {
   name = "mono-addins-${version}";
@@ -15,9 +15,13 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   # Use msbuild when https://github.com/NixOS/nixpkgs/pull/43680 is merged
-  buildInputs = [ mono6 msbuild gtk-sharp-2_0 ];
+  buildInputs = [ mono gtk-sharp-2_0 ];
 
   dontStrip = true;
+
+  preInstall = ''
+    for f in bin/*.dll; do sn -q -R $f mono-addins.snk; done
+  '';
 
   meta = with stdenv.lib; {
     homepage = https://www.mono-project.com/archived/monoaddins/;
