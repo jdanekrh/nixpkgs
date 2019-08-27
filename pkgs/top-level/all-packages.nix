@@ -8214,11 +8214,6 @@ in
 
   mono = mono5;
 
-  mono4 = lowPrio (callPackage ../development/compilers/mono/4.nix {
-    inherit (darwin) libobjc;
-    inherit (darwin.apple_sdk.frameworks) Foundation;
-  });
-
   mono5 = callPackage ../development/compilers/mono/5.nix {
     inherit (darwin) libobjc;
     inherit (darwin.apple_sdk.frameworks) Foundation;

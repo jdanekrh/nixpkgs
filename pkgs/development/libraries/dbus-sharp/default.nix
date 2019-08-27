@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, pkgconfig, mono4, autoreconfHook }:
+{stdenv, fetchFromGitHub, pkgconfig, mono6, msbuild, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   name = "dbus-sharp-${version}";
@@ -14,9 +14,8 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
-  # Use msbuild when https://github.com/NixOS/nixpkgs/pull/43680 is merged
   # See: https://github.com/NixOS/nixpkgs/pull/46060
-  buildInputs = [ mono4 ];
+  buildInputs = [ mono6 msbuild ];
 
   dontStrip = true;
 
