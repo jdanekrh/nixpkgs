@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, pkgconfig, mono6, msbuild, autoreconfHook }:
+{stdenv, fetchFromGitHub, pkgconfig, mono, autoreconfHook }:
 
 stdenv.mkDerivation rec {
   name = "dbus-sharp-${version}";
@@ -12,10 +12,12 @@ stdenv.mkDerivation rec {
     sha256 = "1g5lblrvkd0wnhfzp326by6n3a9mj2bj7a7646g0ziwgsxp5w6y7";
   };
 
+  patches = [ ./signing.patch ];
+
   nativeBuildInputs = [ pkgconfig autoreconfHook ];
 
   # See: https://github.com/NixOS/nixpkgs/pull/46060
-  buildInputs = [ mono6 msbuild ];
+  buildInputs = [ mono ];
 
   dontStrip = true;
 
